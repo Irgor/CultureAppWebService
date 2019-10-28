@@ -5,13 +5,15 @@
 	header("Access-Control-Allow-Methods: PUT, POST, GET, OPTIONS, DELETE");	
 	header("Cache-Control: no-cache, no-store, must-revalidate"); // limpa o cache
 	header("Access-Control-Allow-Origin: *");
- 	header("Content-Type: application/json; charset=utf-8"); 
+	// header("Content-Type: application/json; charset=utf-8"); 
     
     require_once("conexao.php");
     
+    $classi = $_GET['classi'];
+
     // $sql = "SELECT codEvento, nomeEvento, descricaoEvento, logradouroEvento, cepEvento, nomeTipoEvento, dataInicioEvento, statusEvento FROM tbEvento inner join tbTipoEvento on tbTipoEvento.codTipoEvento = tbEvento.codTipoEvento";
    
-    $sql = "SELECT *, nomeCategoria FROM tbevento inner join tbcategoria on tbevento.codCategoria = tbcategoria.codCategoria order by codEvento desc";
+    $sql = "SELECT *, nomeCategoria FROM tbevento INNER JOIN tbcategoria ON tbevento.codCategoria = tbcategoria.codCategoria WHERE classificacaoIndicativa LIKE '%".$classi."%'";
 
     $stmt = $con->prepare($sql);
     if($stmt->execute()){
@@ -23,7 +25,7 @@
             foreach($result as $i => $r){
                 $teste = $r;
 
-                if($teste['origemEvento'] != 'Sesc'){
+                if($teste['origemEvento'] != 'sesc' && $teste['origemEvento'] != 'Sala São Paulo'){
                     $teste['origemEvento'] = 'Itau Cultural';
                     $teste['16'] = 'Itau Cultural';
 
@@ -31,6 +33,7 @@
 
                 foreach($teste as $j => $v){
                     try{
+                        //$v = utf8_decode($v);
                         $v = str_replace('“',"'",$v);
                         $v = str_replace('”',"'",$v);
                         $v = str_replace(","," ",$v);
@@ -47,7 +50,7 @@
                         $v = str_replace('çº','ú',$v);
                         $v = str_replace('ç­','í',$v);
                         $v = str_replace('ç£','ã',$v);
-			$v = str_replace("ç©","é",$v);
+			            $v = str_replace("ç©","é",$v);
                         $v = str_replace('ç ','á',$v);
                         $v = str_replace('ç§o','ço',$v);
                         $v = str_replace('â€','"',$v);
@@ -61,7 +64,6 @@
                         
                         $v = str_replace("%28","(",$v);
                         $v = str_replace("%29",")",$v);
-                        
                     }catch(Exception $e){
                         $v = $v;
                     }

@@ -9,21 +9,37 @@
 	$json = $_GET['json'];
 	$obj = json_decode($json, true);
 
-	// echo($json);
-	// var_dump($obj);
+	$data =  date("Y-m-d");
 
-	$sql = "INSERT INTO tbUsuario(nomeUsuario, emailUsuario, senhaUsuario, dataNascimentoUsuario, loginUsuario) VALUES (?,?,?,?,?)";
-	$stmt = $con->prepare($sql);
-	$stmt->bindParam(1, $obj['nomeUsuario']);
-	$stmt->bindParam(2, $obj['emailUsuario']);
-	$stmt->bindParam(3, $obj['senhaUsuario']);	
-	$stmt->bindParam(4, $obj['dataNascimentoUsuario']);
-	$stmt->bindParam(5, $obj['emailUsuario']);	
 	
-	if($stmt->execute()){
-		echo("a");
+	$sql="SELECT codUsuario from tbusuario WHERE emailUsuario like ?";
+	$stmt = $con->prepare($sql);
+	$stmt->bindParam(1, $obj['emailUsuario']);
+	$stmt->execute();
+	
+	$cod = $stmt->fetchAll();
+	
+	
+	if($cod[0]['codUsuario'] > 0){
+		echo('{"0":"-1"}');
 	}else{
-		echo("n");
+		$sql = "INSERT INTO tbusuario(nomeUsuario, emailUsuario, senhaUsuario, dataNascimentoUsuario, statusUsuario, codNivel, dataCadastro) VALUES (?,?,?,?,1,2,?)";
+                
+		$stmt = $con->prepare($sql);
+		$stmt->bindParam(1, $obj['nomeUsuario']);
+		$stmt->bindParam(2, $obj['emailUsuario']);
+		$stmt->bindParam(3, $obj['senhaUsuario']);	
+		$stmt->bindParam(4, $obj['dataNascimentoUsuario']);
+		$stmt->bindParam(5, $data);
+	        
+		if($stmt->execute()){
+			echo('{"0":"1"}');
+		}else{
+			echo('{"0":"0"}');
+		}
 	}
+
+
+	
 	
 ?>
