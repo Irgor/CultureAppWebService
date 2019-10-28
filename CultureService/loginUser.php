@@ -8,17 +8,18 @@
     $login = $_GET['login'];
     $senha = $_GET['senha'];
     
-    $sql = "SELECT codUsuario FROM tbusuario WHERE loginUsuario like ? and senhaUsuario like ?";
+    $sql = "SELECT codUsuario FROM tbusuario WHERE emailUsuario like ? and senhaUsuario like ?";
     $stmt = $con->prepare($sql);
-	$stmt->bindParam(1, $login);
+    $stmt->bindParam(1, $login);
     $stmt->bindParam(2, $senha);
     
     if($stmt->execute()){
         $r = $stmt->fetch(PDO::FETCH_ASSOC);
         if($r['codUsuario'] === null){
-            echo '1';
+        
+            echo '{"0":"0"}';
         }else{
-            echo '2';
+            echo '{"0":"'.$r['codUsuario'].'"}';
         }
     }
     
